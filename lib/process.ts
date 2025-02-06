@@ -1,6 +1,6 @@
-import { TextBlocks, TableRow } from './types';
+import { DataBlock, DataRow } from './types';
 
-export function detectTextBlocks(source: string): TextBlocks {
+export function detectTextBlocks(source: string): DataBlock {
     // remove any leading/trailing whitespace and split by double newlines
     const blocks = source.trim().split(/\n\s*\n/).filter(block => block.trim().length > 0);
     
@@ -17,7 +17,7 @@ export function splitIntoSentences(text: string): string[] {
         .map(sentence => sentence.trim());
 }
 
-export function transformToDataFrame(blocks: TextBlocks): TableRow[] {
+export function transformToDataFrame(blocks: DataBlock): DataRow[] {
     const originalSentences = splitIntoSentences(blocks.original);
     const translationSentences = splitIntoSentences(blocks.translation);
     
