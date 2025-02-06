@@ -3,11 +3,11 @@ import { Plugin} from 'obsidian';
 export default class CsvCodeBlockPlugin extends Plugin {
 	
 	async onload() {
-		this.registerMarkdownCodeBlockProcessor("lang-split-by-sentences", processSplitBySentences);
+		this.registerMarkdownCodeBlockProcessor("lang", process);
 	}
 }
 
-function processSplitBySentences(source: string, el: HTMLElement, ctx: any): void {
+function process(source: string, el: HTMLElement, ctx: any): void {
 	const wrapper = el.createEl("div", {
 		cls: "lehrer"
 	});
