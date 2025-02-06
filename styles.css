@@ -1,8 +1,40 @@
 /*
-
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
-
-If your plugin does not need CSS, delete this file.
-
+Styles for the Lehrer Obsidian plugin.
 */
+
+.lehrer table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+}
+
+.lehrer tr {
+    border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.lehrer tr:last-child {
+    border-bottom: none;
+}
+
+.lehrer td {
+    padding: 8px;
+    line-height: 1.5;
+}
+
+.lehrer td.number {
+    width: 42px;
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.6em;
+    vertical-align: top;
+    user-select: none;
+}
+
+.lehrer td.original-text {
+    min-width: 200px;
+    padding-right: 16px;
+}
+
+.lehrer td.input-text {
+    min-width: 200px;
+}
