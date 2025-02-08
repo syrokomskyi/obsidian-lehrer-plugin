@@ -29,10 +29,18 @@ async function transformToDataFrame(blocks: DataBlock): Promise<DataRow[]> {
       ? await translateSentences(originalSentences)
       : splitIntoSentences(blocks.translation);
 
+  const originalLength = originalSentences.length;
+  const translationLength = translationSentences.length;
+  const maxLength = Math.max(originalLength, translationLength);
+  originalSentences.length = maxLength;
+  translationSentences.length = maxLength;
+  originalSentences.fill("", originalLength, maxLength);
+  translationSentences.fill("", translationLength, maxLength);
+
   return originalSentences.map((sentence, index) => ({
     number: index + 1,
     original: sentence,
-    translation: translationSentences[index] || "",
+    translation: translationSentences[index],
   }));
 }
 
