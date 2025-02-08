@@ -1,4 +1,5 @@
 import type { MarkdownPostProcessorContext } from "obsidian";
+import translate from "translate";
 import type { DataBlock, DataRow } from "./types";
 
 function detectTextBlocks(source: string): DataBlock {
@@ -21,9 +22,12 @@ function splitIntoSentences(text: string): string[] {
     .map((sentence) => sentence.trim());
 }
 
-function transformToDataFrame(blocks: DataBlock): DataRow[] {
+async function transformToDataFrame(blocks: DataBlock): Promise<DataRow[]> {
   const originalSentences = splitIntoSentences(blocks.original);
-  const translationSentences = splitIntoSentences(blocks.translation);
+  let translationSentences = splitIntoSentences(blocks.translation);
+  if (translationSentences.length === 0) {
+    translationSentences = await translateSentences(originalSentences);
+  }
 
   return originalSentences.map((sentence, index) => ({
     number: index + 1,
@@ -32,16 +36,32 @@ function transformToDataFrame(blocks: DataBlock): DataRow[] {
   }));
 }
 
-export function process(
+// see https://npmjs.com/package/translate
+translate.engine = "google";
+
+async function translateSentences(sentences: string[]): Promise<string[]> {
+  const source = "de";
+  const target = "uk";
+
+  const r: string[] = [];
+  for (const sentence of sentences) {
+    const translation = await translate(sentence, { from: source, to: target });
+    r.push(translation);
+  }
+
+  return r;
+}
+
+export async function process(
   source: string,
   el: HTMLElement,
   ctx: MarkdownPostProcessorContext,
-): void {
+): Promise<void> {
   // detect how many text blocks we have
   const { original, translation } = detectTextBlocks(source);
 
   // transform 2 text blocks to table structure
-  const tableData = transformToDataFrame({ original, translation });
+  const tableData = await transformToDataFrame({ original, translation });
 
   const wrapper = el.createEl("div", {
     cls: "lehrer",
