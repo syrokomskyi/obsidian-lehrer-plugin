@@ -4,8 +4,10 @@
   "description": "This is a Lehrer plugin for [Obsidian](https://obsidian.md).",
   "main": "main.js",
   "scripts": {
-    "dev": "node esbuild.config.mjs",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+    "dev": "node esbuild.config.mjs",
+    "lint": "cls && npx @biomejs/biome lint --write .",
+    "format": "cls && npx @biomejs/biome format --write .",
     "version": "node version-bump.mjs && git add manifest.json versions.json"
   },
   "keywords": [],
