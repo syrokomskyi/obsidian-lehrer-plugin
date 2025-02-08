@@ -1,9 +1,9 @@
 {
   "id": "lehrer-plugin",
-  "name": "Obsidian Lehrer Plugin",
+  "name": "Lehrer",
   "version": "1.0.0",
   "minAppVersion": "0.15.0",
-  "description": "Help for learning language.",
+  "description": "Helper for learning German language.",
   "author": "Andrii Syrokomskyi",
   "authorUrl": "https://syrokomskyi.com",
   "fundingUrl": "https://syrokomskyi.com",
