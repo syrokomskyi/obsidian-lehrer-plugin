@@ -24,10 +24,10 @@ function splitIntoSentences(text: string): string[] {
 
 async function transformToDataFrame(blocks: DataBlock): Promise<DataRow[]> {
   const originalSentences = splitIntoSentences(blocks.original);
-  let translationSentences = splitIntoSentences(blocks.translation);
-  if (translationSentences.length === 0) {
-    translationSentences = await translateSentences(originalSentences);
-  }
+  const translationSentences =
+    blocks.translation.length === 0
+      ? await translateSentences(originalSentences)
+      : splitIntoSentences(blocks.translation);
 
   return originalSentences.map((sentence, index) => ({
     number: index + 1,
