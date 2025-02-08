@@ -1,3 +1,4 @@
+import type { MarkdownPostProcessorContext } from "obsidian";
 import type { DataBlock, DataRow } from "./types";
 
 function detectTextBlocks(source: string): DataBlock {
@@ -31,7 +32,11 @@ function transformToDataFrame(blocks: DataBlock): DataRow[] {
   }));
 }
 
-export function process(source: string, el: HTMLElement, ctx: any): void {
+export function process(
+  source: string,
+  el: HTMLElement,
+  ctx: MarkdownPostProcessorContext,
+): void {
   // detect how many text blocks we have
   const { original, translation } = detectTextBlocks(source);
 
