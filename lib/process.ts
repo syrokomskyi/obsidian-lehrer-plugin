@@ -1,5 +1,5 @@
 import type { MarkdownPostProcessorContext } from "obsidian";
-import translate from "translate";
+import { Translate } from "translate";
 import type { DataBlock, DataRow } from "./types";
 
 function detectTextBlocks(source: string): DataBlock {
@@ -37,15 +37,14 @@ async function transformToDataFrame(blocks: DataBlock): Promise<DataRow[]> {
 }
 
 // see https://npmjs.com/package/translate
-translate.engine = "google";
+const translate = Translate({ engine: "google", from: "de", cache: undefined });
 
 async function translateSentences(sentences: string[]): Promise<string[]> {
-  const source = "de";
   const target = "uk";
 
   const r: string[] = [];
   for (const sentence of sentences) {
-    const translation = await translate(sentence, { from: source, to: target });
+    const translation = await translate(sentence, { to: target });
     r.push(translation);
   }
 
