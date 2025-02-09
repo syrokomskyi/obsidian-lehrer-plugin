@@ -84,16 +84,34 @@ async function transformToDataFrame(block: DataBlock): Promise<DataRow[]> {
   }));
 }
 
+// Translation for each language. Reason: we need a cache.
 // see https://npmjs.com/package/translate
-const translate = Translate({ engine: "google", from: "de", cache: undefined });
+function getTranslate(from: string): ReturnType<typeof Translate> {
+  if (!translateMap[from]) {
+    translateMap[from] = Translate({
+      engine: "google",
+      from: from,
+      cache: undefined,
+    });
+  }
+
+  return translateMap[from];
+}
+
+const translateMap: Record<string, ReturnType<typeof Translate>> = {};
 
 async function translateSentences(
   options: Options,
   sentences: string[],
 ): Promise<string[]> {
   const r: string[] = [];
+  const from = options.source ?? "de";
+  const translate = getTranslate(from);
+  const to = options.target ?? "uk";
   for (const sentence of sentences) {
-    const translation = await translate(sentence, { to: options.target });
+    const translation = await translate(sentence, {
+      to: to,
+    });
     r.push(translation);
   }
 
@@ -111,9 +129,7 @@ export async function process(
   // transform the data blocks to table structure
   const tableData = await transformToDataFrame(dataBlock);
 
-  const wrapper = el.createEl("div", {
-    cls: "lehrer",
-  });
+  const wrapper = el.createEl("div", { cls: "lehrer" });
   const table = wrapper.createEl("table");
   const body = table.createEl("tbody");
 
