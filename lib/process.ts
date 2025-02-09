@@ -1,18 +1,58 @@
 import type { MarkdownPostProcessorContext } from "obsidian";
 import { Translate } from "translate";
-import type { DataBlock, DataRow } from "./types";
+import type { DataBlock, DataRow, Options } from "./types";
 
-function detectTextBlocks(source: string): DataBlock {
+function detectDataBlock(source: string): DataBlock {
   // remove any leading/trailing whitespace and split by double newlines
   const blocks = source
     .trim()
     .split(/\n\s*\n/)
     .filter((block) => block.trim().length > 0);
 
+  const options = detectOptions(blocks[0] ?? "");
+  const hasOptions = Object.keys(options).length > 0;
+  const originalTextIndex = hasOptions ? 1 : 0;
+
   return {
-    original: blocks[0]?.trim() || "",
-    translation: blocks[1]?.trim() || "",
+    options: options,
+    original: blocks[originalTextIndex]?.trim() ?? "",
+    translation: blocks[originalTextIndex + 1]?.trim() ?? "",
   };
+}
+
+// Examples:
+//
+// 1/ Source and target languages.
+// ```text
+// de
+// uk
+// ```
+//
+// 2/ Target language.
+// ```text
+// uk
+// ```
+//
+// 3/ Just an original text.
+// ```text
+// Hello, world!
+// ```
+function detectOptions(block: string): Options {
+  const lines = block
+    .trim()
+    .split(/\n/)
+    .map((line) => line.trim());
+  // only languages as ISO 639-1 can be specified
+  const linesWithLangauges = lines.filter((line) => line.length === 2);
+
+  const isOptions = lines.length === linesWithLangauges.length;
+
+  return isOptions
+    ? {
+        source: linesWithLangauges[0]?.trim(),
+        target: linesWithLangauges[1]?.trim(),
+      }
+    : {};
 }
 
 function splitIntoSentences(text: string): string[] {
@@ -22,12 +62,12 @@ function splitIntoSentences(text: string): string[] {
     .map((sentence) => sentence.trim());
 }
 
-async function transformToDataFrame(blocks: DataBlock): Promise<DataRow[]> {
-  const originalSentences = splitIntoSentences(blocks.original);
+async function transformToDataFrame(block: DataBlock): Promise<DataRow[]> {
+  const originalSentences = splitIntoSentences(block.original);
   const translationSentences =
-    blocks.translation.length === 0
-      ? await translateSentences(originalSentences)
-      : splitIntoSentences(blocks.translation);
+    block.translation.length === 0
+      ? await translateSentences(block.options, originalSentences)
+      : splitIntoSentences(block.translation);
 
   const originalLength = originalSentences.length;
   const translationLength = translationSentences.length;
@@ -47,12 +87,13 @@ async function transformToDataFrame(blocks: DataBlock): Promise<DataRow[]> {
 // see https://npmjs.com/package/translate
 const translate = Translate({ engine: "google", from: "de", cache: undefined });
 
-async function translateSentences(sentences: string[]): Promise<string[]> {
-  const target = "uk";
-
+async function translateSentences(
+  options: Options,
+  sentences: string[],
+): Promise<string[]> {
   const r: string[] = [];
   for (const sentence of sentences) {
-    const translation = await translate(sentence, { to: target });
+    const translation = await translate(sentence, { to: options.target });
     r.push(translation);
   }
 
@@ -65,10 +106,10 @@ export async function process(
   ctx: MarkdownPostProcessorContext,
 ): Promise<void> {
   // detect how many text blocks we have
-  const { original, translation } = detectTextBlocks(source);
+  const dataBlock = detectDataBlock(source);
 
-  // transform 2 text blocks to table structure
-  const tableData = await transformToDataFrame({ original, translation });
+  // transform the data blocks to table structure
+  const tableData = await transformToDataFrame(dataBlock);
 
   const wrapper = el.createEl("div", {
     cls: "lehrer",
