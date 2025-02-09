@@ -46,11 +46,12 @@ function detectOptions(block: string): Options {
   const linesWithLangauges = lines.filter((line) => line.length === 2);
 
   const isOptions = lines.length === linesWithLangauges.length;
+  const oneLanguageOnly = isOptions && linesWithLangauges.length === 1;
 
   return isOptions
     ? {
-        source: linesWithLangauges[0]?.trim(),
-        target: linesWithLangauges[1]?.trim(),
+        source: oneLanguageOnly ? undefined : linesWithLangauges[0]?.trim(),
+        target: linesWithLangauges[oneLanguageOnly ? 0 : 1]?.trim() ?? "uk",
       }
     : {};
 }
@@ -99,7 +100,7 @@ async function translateSentences(
   for (const sentence of sentences) {
     const translation = await translate(sentence, {
       from: options.source,
-      to: options.target ?? "uk",
+      to: options.target,
     });
     r.push(translation);
   }
@@ -125,8 +126,8 @@ export async function process(
   const thead = table.createEl("thead");
   const tr = thead.createEl("tr");
   tr.createEl("th", { text: "" });
-  tr.createEl("th", { text: dataBlock.options.source });
-  tr.createEl("th", { text: dataBlock.options.target });
+  tr.createEl("th", { text: dataBlock.options.source ?? "auto" });
+  tr.createEl("th", { text: dataBlock.options.target ?? "auto" });
 
   // use the transformed data to create table rows
   for (const row of tableData) {
