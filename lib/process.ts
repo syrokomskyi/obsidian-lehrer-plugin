@@ -84,33 +84,22 @@ async function transformToDataFrame(block: DataBlock): Promise<DataRow[]> {
   }));
 }
 
-// Translation for each language. Reason: we need a cache.
+// There is a global translation. Reason: we need a cache.
 // see https://npmjs.com/package/translate
-function getTranslate(from: string): ReturnType<typeof Translate> {
-  if (!translateMap[from]) {
-    translateMap[from] = Translate({
-      engine: "google",
-      from: from,
-      cache: undefined,
-    });
-  }
-
-  return translateMap[from];
-}
-
-const translateMap: Record<string, ReturnType<typeof Translate>> = {};
+const translate = Translate({
+  engine: "google",
+  cache: undefined,
+});
 
 async function translateSentences(
   options: Options,
   sentences: string[],
 ): Promise<string[]> {
   const r: string[] = [];
-  const from = options.source ?? "de";
-  const translate = getTranslate(from);
-  const to = options.target ?? "uk";
   for (const sentence of sentences) {
     const translation = await translate(sentence, {
-      to: to,
+      from: options.source,
+      to: options.target ?? "uk",
     });
     r.push(translation);
   }
