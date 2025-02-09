@@ -117,6 +117,12 @@ export async function process(
   const table = wrapper.createEl("table");
   const body = table.createEl("tbody");
 
+  const thead = table.createEl("thead");
+  const tr = thead.createEl("tr");
+  tr.createEl("th", { text: "" });
+  tr.createEl("th", { text: dataBlock.options.source });
+  tr.createEl("th", { text: dataBlock.options.target });
+
   // use the transformed data to create table rows
   for (const row of tableData) {
     const tr = body.createEl("tr");
