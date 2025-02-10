@@ -1,9 +1,9 @@
 {
-  "id": "lehrer-plugin",
+  "id": "lehrer",
   "name": "Lehrer",
   "version": "1.0.0",
   "minAppVersion": "0.15.0",
-  "description": "Helper for learning German language.",
+  "description": "Helper for learning language.",
   "author": "Andrii Syrokomskyi",
   "authorUrl": "https://syrokomskyi.com",
   "fundingUrl": "https://github.com/sponsors/syrokomskyi",
