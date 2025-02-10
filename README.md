@@ -16,18 +16,18 @@ A plugin for [Obsidian](https://obsidian.md) that helps you learn German by prov
 ### Translate from source to target language
 
 ![Translate from source to target language - Before](docs/images/translate-from-source-to-target-before.png)
-_Before_
+
+🔽
 
 ![Translate from source to target language - After](docs/images/translate-from-source-to-target-after.png)
-_After_
 
 ### Separate by Sentences and Collate
 
 ![Separate by Sentences and Collate - Before](docs/images/separate-by-sentences-and-collate-before.png)
-_Before_
+
+🔽
 
 ![Separate by Sentences and Collate - After](docs/images/separate-by-sentences-and-collate-after.png)
-_After_
 
 ## Usage
 
@@ -54,6 +54,8 @@ Hallo, wie geht es dir?
 ```
 
 This will translate the text to Ukrainian.
+
+See [Alpha-2 codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) for a full list of supported languages.
 
 ### 3. Specify Source and Target Languages
 
