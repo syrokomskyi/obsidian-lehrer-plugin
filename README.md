@@ -141,6 +141,10 @@ Run the test suite:
 pnpm test
 ```
 
+### Visualising
+
+To add screenshots with a frame (as already presented), we use [this service](https://postspark.app/screenshot) with the theme `Aqua Light'.
+
 ### Releasing
 
 In the GitHub repository was implemented automatically created release when we create a new tag.
