@@ -33,7 +33,7 @@ will render 🔽
 
 To use the plugin, create a code block with the `lang` language identifier. The plugin supports several formats:
 
-### 1. Simple Translation
+### Simple Translation
 
 For quick translation of text, simply write your German text in a code block:
 
@@ -43,7 +43,7 @@ Hallo, wie geht es dir?
 
 The plugin will automatically detect German and translate it to English.
 
-### 2. Specify Target Language
+### Specify Target Language
 
 To translate to a specific language, specify the ISO 639-1 language code first:
 
@@ -140,6 +140,33 @@ Run the test suite:
 ```bash
 pnpm test
 ```
+
+### Releasing
+
+In the GitHub repository was implemented automatically created release when we create a new tag.
+
+Thanks [here](https://docs.obsidian.md/Plugins/Releasing/Release+your+plugin+with+GitHub+Actions).
+
+1. Create a tag that matches the version in the `manifest.json` file.
+
+```sh
+git tag -a 1.0.1 -m "1.0.1"
+```
+
+2. Push the tag to GitHub.
+
+```sh
+git push origin 1.0.1
+
+```
+
+3. Browse to your repository on GitHub and select the Actions tab. Your workflow might still be running, or it might have finished already.
+
+4. When the workflow finishes, go back to the main page for your repository and select Releases in the sidebar on the right side. The workflow has created a draft GitHub release and uploaded the required assets as binary attachments.
+
+5. Select `Edit` (pencil icon) on the right side of the release name.
+
+6. Add release notes to let users know what happened in this release, and then select `Publish release`.
 
 ## Contributing
 
