@@ -126,8 +126,8 @@ export async function process(
   const thead = table.createEl("thead");
   const tr = thead.createEl("tr");
   tr.createEl("th", { text: "" });
-  tr.createEl("th", { text: dataBlock.options.source ?? "auto" });
-  tr.createEl("th", { text: dataBlock.options.target ?? "auto" });
+  tr.createEl("th", { text: dataBlock.options.source ?? "" });
+  tr.createEl("th", { text: dataBlock.options.target ?? "" });
 
   // use the transformed data to create table rows
   for (const row of tableData) {
