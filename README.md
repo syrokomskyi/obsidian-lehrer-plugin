@@ -155,10 +155,16 @@ git tag -a 1.0.1 -m "1.0.1"
 
 2. Push the tag to GitHub.
 
+With command line:
+
 ```sh
 git push origin 1.0.1
 
 ```
+
+With TortoiseGit:
+
+![TortoiseGit](docs/images/push-tag-with-tortoise-git.png)
 
 3. Browse to your repository on GitHub and select the Actions tab. Your workflow might still be running, or it might have finished already.
 
