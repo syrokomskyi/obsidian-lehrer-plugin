@@ -1,7 +1,7 @@
 {
   "name": "obsidian-lehrer-plugin",
   "version": "1.0.0",
-  "description": "This is a plugin for learning German language.",
+  "description": "This is an assistant for learning language.",
   "main": "main.js",
   "scripts": {
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",

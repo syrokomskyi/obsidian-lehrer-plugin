@@ -3,7 +3,7 @@
   "name": "Lehrer",
   "version": "1.0.0",
   "minAppVersion": "0.15.0",
-  "description": "Helper for learning language.",
+  "description": "Language learning assistant.",
   "author": "Andrii Syrokomskyi",
   "authorUrl": "https://syrokomskyi.com",
   "fundingUrl": "https://github.com/sponsors/syrokomskyi",
