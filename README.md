@@ -149,7 +149,7 @@ To add screenshots with a frame (as already presented), we use [this service](ht
 
 Every new version of Obsidian may introduce new capabilities for plugins.
 
-We should touch tis files:
+We should touch these files:
 
 -   `package.json`: `version`
 -   `manifest.json`: `version`, `minAppVersion`
