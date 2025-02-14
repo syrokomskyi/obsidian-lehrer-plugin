@@ -147,6 +147,21 @@ To add screenshots with a frame (as already presented), we use [this service](ht
 
 ### Releasing
 
+Every new version of Obsidian may introduce new capabilities for plugins.
+
+We should touch tis files:
+
+-   `package.json`: `version`
+-   `manifest.json`: `version`, `minAppVersion`
+
+And (maybe):
+
+-   `versions.json`
+
+See <https://docs.obsidian.md/Reference/Versions> for reasoning.
+
+We don't need to list every plugin relese in the `versions.json`. We only need to update `versions.json` if we change the `minAppVersion` for our plugin.
+
 In the GitHub repository was implemented automatically created release when we create a new tag.
 
 Thanks [here](https://docs.obsidian.md/Plugins/Releasing/Release+your+plugin+with+GitHub+Actions).

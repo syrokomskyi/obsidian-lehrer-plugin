@@ -5,6 +5,20 @@ All notable changes to the Obsidian Lehrer Plugin will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-02-14
+
+### Added
+
+-   Included `Visualising` section to `README.md`.
+
+### Changed
+
+-   Enhanced `Releasing` section in `README.md`.
+
+### Fixed
+
+-   Issue: Lookbehinds are not supported in iOS versions before 16.4.
+
 ## [1.1.0] - 2025-02-12
 
 ### Added
