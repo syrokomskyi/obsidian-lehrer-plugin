@@ -169,7 +169,7 @@ Thanks [here](https://docs.obsidian.md/Plugins/Releasing/Release+your+plugin+wit
 1. Create a tag that matches the version in the `manifest.json` file.
 
 ```sh
-git tag -a 1.0.1 -m "1.0.1"
+git tag -a 1.2.0 -m "1.2.0"
 ```
 
 2. Push the tag to GitHub.
@@ -177,7 +177,7 @@ git tag -a 1.0.1 -m "1.0.1"
 With command line:
 
 ```sh
-git push origin 1.0.1
+git push origin 1.2.0
 
 ```
 
