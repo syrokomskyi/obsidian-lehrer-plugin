@@ -56,11 +56,14 @@ function detectOptions(block: string): Options {
     : {};
 }
 
+// Match sequences of non-punctuation followed by punctuation and
+// optional trailing whitespace or end-of-string.
+// Example: "This is one sentence. And here is another!"
+// matches "This is one sentence." and "And here is another!"
 function splitIntoSentences(text: string): string[] {
-  return text
-    .split(/((?<=[.!?])\s)|\s+(?=[.!?])/)
-    .filter((sentence) => sentence.trim().length > 0)
-    .map((sentence) => sentence.trim());
+  const sentences = text.match(/[^.!?]+[.!?]+(\s|$)/g) || [];
+
+  return sentences.map((s) => s.trim());
 }
 
 async function transformToDataFrame(block: DataBlock): Promise<DataRow[]> {
