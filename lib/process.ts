@@ -61,7 +61,21 @@ function detectOptions(block: string): Options {
 // Example: "This is one sentence. And here is another!"
 // matches "This is one sentence." and "And here is another!"
 function splitIntoSentences(text: string): string[] {
-  const sentences = text.match(/[^.!?]+[.!?]+(\s|$)/g) || [];
+  const dotted = text
+    .split("\n")
+    // an each new line should be ended with `.!?`
+    .map((s) => {
+      const p = s.trim();
+      const isSentence = p.endsWith(".") || p.endsWith("!") || p.endsWith("?");
+      return isSentence ? p : `${p}.`;
+    })
+    .join("\n")
+    // replace some punctuation
+    .replace("...", ".")
+    .replace("!..", "!")
+    .replace("?..", "?");
+
+  const sentences = dotted.match(/[^.!?]+[.!?]+(\s|$)/g) || [];
 
   return sentences.map((s) => s.trim());
 }
