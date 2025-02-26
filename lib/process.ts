@@ -73,7 +73,11 @@ function splitIntoSentences(text: string): string[] {
     // replace some punctuation
     .replace("...", ".")
     .replace("!..", "!")
-    .replace("?..", "?");
+    .replace("?..", "?")
+    // replace dots between digits with spaces (e.g., 10.000 -> 10 000)
+    .replace(/(\d)\.(\d)/g, "$1 $2")
+    // replace commas between digits with spaces (e.g., 10,000 -> 10 000)
+    .replace(/(\d)\,(\d)/g, "$1 $2");
 
   const sentences = dotted.match(/[^.!?]+[.!?]+(\s|$)/g) || [];
 
