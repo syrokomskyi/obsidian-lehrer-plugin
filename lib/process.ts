@@ -3,10 +3,10 @@ import { Translate } from "translate";
 import type { DataBlock, DataRow, Options } from "./types";
 
 function detectDataBlock(source: string): DataBlock {
-  // remove any leading/trailing whitespace and split by double newlines
+  // remove any leading/trailing whitespace and split by two or more newlines
   const blocks = source
     .trim()
-    .split(/\n\s*\n/)
+    .split(/\n\s*\n+\s*\n/)
     .filter((block) => block.trim().length > 0);
 
   const options = detectOptions(blocks[0] ?? "");
