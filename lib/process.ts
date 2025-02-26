@@ -71,7 +71,7 @@ function splitIntoSentences(text: string): string[] {
     })
     .join("\n")
     // replace some punctuation
-    .replace("...", ".")
+    .replace("…", "...")
     .replace("!..", "!")
     .replace("?..", "?")
     // replace dots between digits with spaces (e.g., 10.000 -> 10 000)
@@ -81,7 +81,16 @@ function splitIntoSentences(text: string): string[] {
 
   const sentences = dotted.match(/[^.!?]+[.!?]+(\s|$)/g) || [];
 
-  return sentences.map((s) => s.trim());
+  return sentences.map((s) =>
+    s
+      .trim()
+      // clear the punctuation after split by sentences
+      .replace("....", "...")
+      .replace("...", "…")
+      .replace(":.", ":")
+      .replace(";.", ";")
+      .replace(",.", ","),
+  );
 }
 
 async function transformToDataFrame(block: DataBlock): Promise<DataRow[]> {
