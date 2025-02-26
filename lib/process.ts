@@ -61,7 +61,18 @@ function detectOptions(block: string): Options {
 // Example: "This is one sentence. And here is another!"
 // matches "This is one sentence." and "And here is another!"
 function splitIntoSentences(text: string): string[] {
+  const ellipsis = "…";
+
   const dotted = text
+    // replace some punctuation
+    .replace(ellipsis, "...")
+    .replace("!..", "!")
+    .replace("?..", "?")
+    // replace dots between digits with spaces (e.g., 10.000 -> 10 000)
+    .replace(/(\d)\.(\d)/g, "$1 $2")
+    // replace commas between digits with spaces (e.g., 10,000 -> 10 000)
+    .replace(/(\d)\,(\d)/g, "$1 $2")
+    // split by new lines
     .split("\n")
     // an each new line should be ended with `.!?`
     .map((s) => {
@@ -69,16 +80,7 @@ function splitIntoSentences(text: string): string[] {
       const isSentence = p.endsWith(".") || p.endsWith("!") || p.endsWith("?");
       return isSentence ? p : `${p}.`;
     })
-    .join("\n")
-    // replace some punctuation
-    .replace("…", "...")
-    .replace("!..", "!")
-    .replace("?..", "?")
-    // replace dots between digits with spaces (e.g., 10.000 -> 10 000)
-    .replace(/(\d)\.(\d)/g, "$1 $2")
-    // replace commas between digits with spaces (e.g., 10,000 -> 10 000)
-    .replace(/(\d)\,(\d)/g, "$1 $2");
-
+    .join("\n");
   const sentences = dotted.match(/[^.!?]+[.!?]+(\s|$)/g) || [];
 
   return sentences.map((s) =>
@@ -86,7 +88,7 @@ function splitIntoSentences(text: string): string[] {
       .trim()
       // clear the punctuation after split by sentences
       .replace("....", "...")
-      .replace("...", "…")
+      .replace("...", ellipsis)
       .replace(":.", ":")
       .replace(";.", ";")
       .replace(",.", ","),
