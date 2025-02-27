@@ -1,5 +1,6 @@
-import type { MarkdownPostProcessorContext } from "obsidian";
+import { type MarkdownPostProcessorContext, TFile } from "obsidian";
 import { Translate } from "translate";
+import { assistant } from "./assistant";
 import type { DataBlock, DataRow, Options } from "./types";
 
 function detectDataBlock(source: string): DataBlock {
@@ -145,27 +146,50 @@ export async function process(
   el: HTMLElement,
   ctx: MarkdownPostProcessorContext,
 ): Promise<void> {
-  // detect how many text blocks we have
-  const dataBlock = detectDataBlock(source);
+  console.log("process source", source);
 
-  // transform the data blocks to table structure
-  const tableData = await transformToDataFrame(dataBlock);
-
-  const wrapper = el.createEl("div", { cls: "lehrer" });
-  const table = wrapper.createEl("table");
-  const body = table.createEl("tbody");
-
-  const thead = table.createEl("thead");
-  const tr = thead.createEl("tr");
-  tr.createEl("th", { text: "" });
-  tr.createEl("th", { text: dataBlock.options.source ?? "" });
-  tr.createEl("th", { text: dataBlock.options.target ?? "" });
-
-  // use the transformed data to create table rows
-  for (const row of tableData) {
-    const tr = body.createEl("tr");
-    tr.createEl("td", { text: `${row.number}`, cls: "number" });
-    tr.createEl("td", { text: row.original, cls: "original-text" });
-    tr.createEl("td", { text: row.translation, cls: "input-text" });
+  const file = ctx.sourcePath
+    ? this.app.vault.getAbstractFileByPath(ctx.sourcePath)
+    : null;
+  if (!(file instanceof TFile)) {
+    return;
   }
+
+  const content = await this.app.vault.read(file);
+  console.log(content);
+
+  // don't wait for the response
+  assistant(content);
+
+  // show a waiting indicator
+  const wrapper = el.createEl("div", { cls: "lehrer" });
+  const statusElement = wrapper.createEl("i", { text: "Processing..." });
+
+  const r = await assistant(content);
+
+  statusElement.setText("Processing complete.");
+
+  //   // detect how many text blocks we have
+  //   const dataBlock = detectDataBlock(source);
+
+  //   // transform the data blocks to table structure
+  //   const tableData = await transformToDataFrame(dataBlock);
+
+  //   const wrapper = el.createEl("div", { cls: "lehrer" });
+  //   const table = wrapper.createEl("table");
+  //   const body = table.createEl("tbody");
+
+  //   const thead = table.createEl("thead");
+  //   const tr = thead.createEl("tr");
+  //   tr.createEl("th", { text: "" });
+  //   tr.createEl("th", { text: dataBlock.options.source ?? "" });
+  //   tr.createEl("th", { text: dataBlock.options.target ?? "" });
+
+  //   // use the transformed data to create table rows
+  //   for (const row of tableData) {
+  //     const tr = body.createEl("tr");
+  //     tr.createEl("td", { text: `${row.number}`, cls: "number" });
+  //     tr.createEl("td", { text: row.original, cls: "original-text" });
+  //     tr.createEl("td", { text: row.translation, cls: "input-text" });
+  //   }
 }
