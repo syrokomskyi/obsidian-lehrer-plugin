@@ -164,10 +164,17 @@ export async function process(
   // show a waiting indicator
   const wrapper = el.createEl("div", { cls: "lehrer" });
   const statusElement = wrapper.createEl("i", { text: "Processing..." });
+  let seconds = 0;
+  const timer = setInterval(() => {
+    ++seconds;
+    statusElement.setText(`Processing... ${seconds} s`);
+  }, 1000);
 
-  const r = await assistant(content);
+  await new Promise((resolve) => setTimeout(resolve, 40000));
+  //   const r = await assistant(content);
 
-  statusElement.setText("Processing complete.");
+  clearInterval(timer);
+  statusElement.setText("Processing completed.");
 
   //   // detect how many text blocks we have
   //   const dataBlock = detectDataBlock(source);
