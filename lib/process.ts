@@ -1,6 +1,12 @@
 import { type MarkdownPostProcessorContext, TFile } from "obsidian";
 import { Translate } from "translate";
-import { assistant } from "./assistant";
+import { emitter } from "./event/emitter";
+import {
+  $appState,
+  $expectedWaitingTime,
+  $flowContractId,
+  $session,
+} from "./store/state";
 import type { DataBlock, DataRow, Options } from "./types";
 
 function detectDataBlock(source: string): DataBlock {
@@ -158,23 +164,46 @@ export async function process(
   const content = await this.app.vault.read(file);
   console.log(content);
 
-  // don't wait for the response
-  assistant(content);
-
   // show a waiting indicator
   const wrapper = el.createEl("div", { cls: "lehrer" });
   const statusElement = wrapper.createEl("i", { text: "Processing..." });
-  let seconds = 0;
-  const timer = setInterval(() => {
-    ++seconds;
-    statusElement.setText(`Processing... ${seconds} s`);
-  }, 1000);
 
-  await new Promise((resolve) => setTimeout(resolve, 40000));
-  //   const r = await assistant(content);
+  emitter.emit("fetchProcess", { session: $session.get(), content });
 
-  clearInterval(timer);
-  statusElement.setText("Processing completed.");
+  // TODO check status of contract
+  if ($flowContractId.get().length === 0) {
+    // TODO we need to start a new flow or get processing/completed by hash
+  }
+
+  const updateViewInSeconds = 1000;
+  const checker = setInterval(() => {
+    const state = $appState.get();
+    if (state === "request-flow") {
+      statusElement.setText("Request flow...");
+      return;
+    }
+
+    if (state === "waiting-result") {
+      const seconds = $expectedWaitingTime.get();
+      statusElement.setText(`Waiting result... ${seconds} s`);
+      return;
+    }
+
+    if (state === "fetch-result") {
+      statusElement.setText("Fetching result...");
+      return;
+    }
+
+    if (state === "success-completed") {
+      statusElement.setText("Processing completed.");
+      return;
+    }
+  }, updateViewInSeconds);
+
+  // we clear the statuc checker after some time
+  // TODO Stop a check by event.
+  await new Promise((resolve) => setTimeout(resolve, 20 * 1000));
+  clearInterval(checker);
 
   //   // detect how many text blocks we have
   //   const dataBlock = detectDataBlock(source);
