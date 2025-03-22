@@ -4,7 +4,7 @@ export async function assistant(content: string): Promise<void> {
   const session = "123456";
   console.log("assistant process start with session", session);
 
-  const response = await fetch(`http://127.0.0.1:8787/v1/${session}`, {
+  const response = await fetch(`http://127.0.0.1:8787/v1/flow/${session}`, {
     method: "POST",
     headers: {
       "Content-Type": "text/plain",
