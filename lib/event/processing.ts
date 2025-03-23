@@ -1,13 +1,32 @@
-import { $appState, $expectedWaitingTime } from "lib/store/state";
+import { $appStatus, $expectedWaitingTime, $result } from "lib/store/state";
 import { emitter } from "./emitter";
 
-export interface FetchProcessParam {
+export interface ReadNoteProcessParam {
   session: string;
   content: string;
 }
 
-export interface WaitingProcessParam {
-  waitingTime: number;
+export async function readNoteProcessEvent({
+  session,
+  content,
+}: ReadNoteProcessParam) {
+  console.log("readNoteProcess", { content });
+
+  $appStatus.set("read-note");
+
+  // check a completed and cached early result
+  if ($result.get()) {
+    emitter.emit("successCompletedProcess", { id: "some-id" });
+    return;
+  }
+
+  // request a result from backend
+  emitter.emit("fetchProcess", { session, content });
+}
+
+export interface FetchProcessParam {
+  session: string;
+  content: string;
 }
 
 export async function fetchProcessEvent({
@@ -16,7 +35,7 @@ export async function fetchProcessEvent({
 }: FetchProcessParam) {
   console.log("fetchProcess", { session, content });
 
-  $appState.set("request-flow");
+  $appStatus.set("request-flow");
   // TODO
   // test
   await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -24,7 +43,7 @@ export async function fetchProcessEvent({
   // set a timer
   const waitingInSeconds = 12;
   $expectedWaitingTime.set(waitingInSeconds);
-  $appState.set("waiting-result");
+  $appStatus.set("waiting-result");
 
   const intervalInSeconds = 1;
   const timer = setInterval(() => {
@@ -35,12 +54,16 @@ export async function fetchProcessEvent({
   clearInterval(timer);
 
   // fetch a result
-  $appState.set("fetch-result");
+  $appStatus.set("fetch-result");
   // TODO
   // test
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
   emitter.emit("successCompletedProcess", { id: "some-id" });
+}
+
+export interface WaitingProcessParam {
+  waitingTime: number;
 }
 
 export function timerWaitingProcessEvent({ waitingTime }: WaitingProcessParam) {

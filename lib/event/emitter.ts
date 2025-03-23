@@ -10,8 +10,10 @@ import {
 import { connectionErrorEvent, errorEvent, unknownErrorEvent } from "./error";
 import {
   type FetchProcessParam,
+  type ReadNoteProcessParam,
   type WaitingProcessParam,
   fetchProcessEvent,
+  readNoteProcessEvent,
   timerWaitingProcessEvent,
 } from "./processing";
 
@@ -22,6 +24,7 @@ export const emitter = new EventEmitter<{
   unknownError: (error: Error) => void;
 
   // processing
+  readNoteProcess: ({ session, content }: ReadNoteProcessParam) => void;
   fetchProcess: ({ session, content }: FetchProcessParam) => void;
   timerWaitingProcess: ({ waitingTime }: WaitingProcessParam) => void;
 
@@ -40,6 +43,7 @@ emitter.on("connectionError", connectionErrorEvent);
 emitter.on("unknownError", unknownErrorEvent);
 
 // processing
+emitter.on("readNoteProcess", readNoteProcessEvent);
 emitter.on("fetchProcess", fetchProcessEvent);
 emitter.on("timerWaitingProcess", timerWaitingProcessEvent);
 

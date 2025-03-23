@@ -1,6 +1,6 @@
 import { atom } from "nanostores";
 
-type AppState =
+type AppStatus =
   | "undefined"
 
   // error
@@ -8,6 +8,7 @@ type AppState =
   | "unknown-error"
 
   // process
+  | "read-note"
   | "request-flow"
   | "waiting-result"
   | "fetch-result"
@@ -18,7 +19,7 @@ type AppState =
   | "timeout-completed";
 
 // see https://github.com/nanostores/nanostores
-export const $appState = atom<AppState>("undefined");
+export const $appStatus = atom<AppStatus>("undefined");
 
 export const $session = atom<string>("");
 
@@ -29,11 +30,17 @@ export const $flowContractVaultId = atom<string>("");
 // waiting timer
 export const $expectedWaitingTime = atom<number>(-1);
 
-export function resetAppState(state: AppState = "undefined") {
-  $appState.set(state);
+// cached result
+// TODO We can have many results: we have many notes.
+export const $result = atom<string | undefined>(undefined);
+
+export function resetAppState(status: AppStatus = "undefined") {
+  $appStatus.set(status);
 
   $flowContractId.set("");
   $flowContractVaultId.set("");
 
   $expectedWaitingTime.set(-1);
+
+  $result.set(undefined);
 }

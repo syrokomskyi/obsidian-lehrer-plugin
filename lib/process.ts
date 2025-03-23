@@ -2,7 +2,7 @@ import { type MarkdownPostProcessorContext, TFile } from "obsidian";
 import { Translate } from "translate";
 import { emitter } from "./event/emitter";
 import {
-  $appState,
+  $appStatus,
   $expectedWaitingTime,
   $flowContractId,
   $session,
@@ -154,6 +154,9 @@ export async function process(
 ): Promise<void> {
   console.log("process source", source);
 
+  // view for show processing and result
+  const view = el.createEl("div", { cls: "lehrer" });
+
   const file = ctx.sourcePath
     ? this.app.vault.getAbstractFileByPath(ctx.sourcePath)
     : null;
@@ -162,43 +165,12 @@ export async function process(
   }
 
   const content = await this.app.vault.read(file);
-  console.log(content);
+  const session = $session.get();
+  emitter.emit("readNoteProcess", { session, content });
 
-  // show a waiting indicator
-  const wrapper = el.createEl("div", { cls: "lehrer" });
-  const statusElement = wrapper.createEl("i", { text: "Processing..." });
-
-  emitter.emit("fetchProcess", { session: $session.get(), content });
-
-  // TODO check status of contract
-  if ($flowContractId.get().length === 0) {
-    // TODO we need to start a new flow or get processing/completed by hash
-  }
-
+  // show a status
   const updateViewInSeconds = 1000;
-  const checker = setInterval(() => {
-    const state = $appState.get();
-    if (state === "request-flow") {
-      statusElement.setText("Request flow...");
-      return;
-    }
-
-    if (state === "waiting-result") {
-      const seconds = $expectedWaitingTime.get();
-      statusElement.setText(`Waiting result... ${seconds} s`);
-      return;
-    }
-
-    if (state === "fetch-result") {
-      statusElement.setText("Fetching result...");
-      return;
-    }
-
-    if (state === "success-completed") {
-      statusElement.setText("Processing completed.");
-      return;
-    }
-  }, updateViewInSeconds);
+  const checker = setInterval(() => viewHandler(view), updateViewInSeconds);
 
   // we clear the statuc checker after some time
   // TODO Stop a check by event.
@@ -228,4 +200,40 @@ export async function process(
   //     tr.createEl("td", { text: row.original, cls: "original-text" });
   //     tr.createEl("td", { text: row.translation, cls: "input-text" });
   //   }
+}
+
+// TODO Many notes.
+let statusElement: HTMLElement;
+
+function viewHandler(view: HTMLElement) {
+  const status = $appStatus.get();
+  console.log("viewHandler", { state: status });
+
+  statusElement ??= view.createEl("i", { text: "Processing..." });
+
+  if (status === "read-note") {
+    statusElement.setText("Reading note...");
+    return;
+  }
+
+  if (status === "request-flow") {
+    statusElement.setText("Requesting flow...");
+    return;
+  }
+
+  if (status === "waiting-result") {
+    const seconds = $expectedWaitingTime.get();
+    statusElement.setText(`Waiting result... ${seconds} s`);
+    return;
+  }
+
+  if (status === "fetch-result") {
+    statusElement.setText("Fetching result...");
+    return;
+  }
+
+  if (status === "success-completed") {
+    statusElement.setText("Processing completed.");
+    return;
+  }
 }
