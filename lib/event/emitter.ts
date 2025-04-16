@@ -29,12 +29,12 @@ export const emitter = new EventEmitter<{
   timerWaitingProcess: ({ waitingTime }: WaitingProcessParam) => void;
 
   // completed
-  successCompletedProcess: ({ id }: SuccessCompletedProcessParam) => void;
+  successCompletedProcess: ({ session }: SuccessCompletedProcessParam) => void;
   failureCompletedProcess: ({
-    id,
+    session,
     error,
   }: FailureCompletedProcessParam) => void;
-  timeoutCompletedProcess: ({ id }: TimeoutCompletedProcessParam) => void;
+  timeoutCompletedProcess: ({ session }: TimeoutCompletedProcessParam) => void;
 }>();
 
 // errors

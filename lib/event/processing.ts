@@ -1,3 +1,5 @@
+import { type BriefContract, checkContract } from "@webgogol/core-share";
+import { load } from "js-yaml";
 import { $appStatus, $expectedWaitingTime, $result } from "lib/store/state";
 import { emitter } from "./emitter";
 
@@ -16,7 +18,7 @@ export async function readNoteProcessEvent({
 
   // check a completed and cached early result
   if ($result.get()) {
-    emitter.emit("successCompletedProcess", { id: "some-id" });
+    emitter.emit("successCompletedProcess", { session });
     return;
   }
 
@@ -35,13 +37,43 @@ export async function fetchProcessEvent({
 }: FetchProcessParam) {
   console.log("fetchProcess", { session, content });
 
-  $appStatus.set("request-flow");
-  // TODO
-  // test
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  $appStatus.set("fetch-result");
 
-  // set a timer
-  const waitingInSeconds = 12;
+  // fetch a result
+  const response = await fetch(`http://127.0.0.1:8787/v1/flow/${session}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain",
+    },
+    body: content,
+  });
+  console.log("fetchProcess", { response });
+  if (response.status !== 200) {
+    emitter.emit("failureCompletedProcess", {
+      session,
+      error: response.statusText,
+    });
+  }
+
+  const body = await response.text();
+  console.log("fetchProcess", { body });
+
+  const contract = load(body) as BriefContract;
+  console.log("fetchProcess", { contract });
+
+  // check a contract
+  try {
+    checkContract(contract);
+  } catch (error) {
+    emitter.emit("failureCompletedProcess", {
+      session,
+      error,
+    });
+    return;
+  }
+
+  // set a timer for waiting result
+  const waitingInSeconds = contract.estimatedDuration;
   $expectedWaitingTime.set(waitingInSeconds);
   $appStatus.set("waiting-result");
 
@@ -53,13 +85,7 @@ export async function fetchProcessEvent({
   await new Promise((resolve) => setTimeout(resolve, waitingInSeconds * 1000));
   clearInterval(timer);
 
-  // fetch a result
-  $appStatus.set("fetch-result");
-  // TODO
-  // test
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
-  emitter.emit("successCompletedProcess", { id: "some-id" });
+  emitter.emit("successCompletedProcess", { session });
 }
 
 export interface WaitingProcessParam {
