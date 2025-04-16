@@ -168,11 +168,11 @@ export async function process(
   const session = $session.get();
   emitter.emit("readNoteProcess", { session, content });
 
-  // show a status
+  // show an updated status
   const updateViewInSeconds = 1000;
   const checker = setInterval(() => viewHandler(view), updateViewInSeconds);
 
-  // we clear the statuc checker after some time
+  // we clear the status checker after some time
   // TODO Stop a check by event.
   await new Promise((resolve) => setTimeout(resolve, 20 * 1000));
   clearInterval(checker);
