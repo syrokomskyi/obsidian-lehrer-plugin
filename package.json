@@ -15,7 +15,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@webgogol/core-share": "0.2.0",
+    "@webgogol/core-share": "0.3.0",
     "js-yaml": "^4.1.0",
     "nanostores": "^1.0.1",
     "translate": "^3.0.1",
