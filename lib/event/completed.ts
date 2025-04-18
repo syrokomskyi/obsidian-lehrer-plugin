@@ -1,4 +1,4 @@
-import { $appStatus } from "lib/store/state";
+import { $appStatus, $lastError } from "lib/store/state";
 
 export interface SuccessCompletedProcessParam {
   session: string;
@@ -19,21 +19,24 @@ export function successCompletedProcessEvent({
   console.log("successCompletedProcess:", { session });
 
   $appStatus.set("success-completed");
+  $lastError.set(null);
 }
 
 export function failureCompletedProcessEvent({
   session,
   error,
 }: FailureCompletedProcessParam) {
-  console.log("failureCompletedProcess:", { session, error });
+  console.error("failureCompletedProcess:", { session, error });
 
   $appStatus.set("failure-completed");
+  $lastError.set(error);
 }
 
 export function timeoutCompletedProcessEvent({
   session,
 }: TimeoutCompletedProcessParam) {
-  console.log("timeoutCompletedProcess:", { session });
+  console.warn("timeoutCompletedProcess:", { session });
 
   $appStatus.set("timeout-completed");
+  $lastError.set(null);
 }

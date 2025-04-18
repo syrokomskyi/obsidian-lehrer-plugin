@@ -4,7 +4,7 @@ import { emitter } from "./event/emitter";
 import {
   $appStatus,
   $expectedWaitingTime,
-  $flowContractId,
+  $lastError,
   $session,
 } from "./store/state";
 import type { DataBlock, DataRow, Options } from "./types";
@@ -166,6 +166,7 @@ export async function process(
 
   const content = await this.app.vault.read(file);
   const session = $session.get();
+  // start the event-driven process
   emitter.emit("readNoteProcess", { session, content });
 
   // show an updated status
@@ -174,7 +175,7 @@ export async function process(
 
   // we clear the status checker after some time
   // TODO Stop a check by event.
-  await new Promise((resolve) => setTimeout(resolve, 20 * 1000));
+  await new Promise((resolve) => setTimeout(resolve, 12 * 1000));
   clearInterval(checker);
 
   //   // detect how many text blocks we have
@@ -209,7 +210,7 @@ function viewHandler(view: HTMLElement) {
   const status = $appStatus.get();
   console.log("viewHandler", { state: status });
 
-  statusElement ??= view.createEl("i", { text: "Processing..." });
+  statusElement ??= view.createEl("pre", { text: "Processing..." });
 
   if (status === "read-note") {
     statusElement.setText("Reading note...");
@@ -236,4 +237,20 @@ function viewHandler(view: HTMLElement) {
     statusElement.setText("Processing completed.");
     return;
   }
+
+  if (status === "failure-completed") {
+    const lastError = $lastError.get();
+    statusElement.setText(
+      `Processing completed with error.\n\n${lastError ? lastError : ""}`,
+    );
+    return;
+  }
+
+  if (status === "timeout-completed") {
+    statusElement.setText("Processing timeout.");
+    return;
+  }
+
+  // any other status
+  statusElement.setText(`TODO ${status}`);
 }

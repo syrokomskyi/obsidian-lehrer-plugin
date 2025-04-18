@@ -39,36 +39,34 @@ export async function fetchProcessEvent({
 
   $appStatus.set("fetch-result");
 
-  // fetch a result
-  const response = await fetch(`http://127.0.0.1:8787/v1/flow/${session}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain",
-    },
-    body: content,
-  });
-  console.log("fetchProcess", { response });
-  if (response.status !== 200) {
-    emitter.emit("failureCompletedProcess", {
-      session,
-      error: response.statusText,
-    });
-  }
-
-  const body = await response.text();
-  console.log("fetchProcess", { body });
-
-  const contract = load(body) as BriefContract;
-  console.log("fetchProcess", { contract });
-
-  // check a contract
+  let contract: BriefContract;
   try {
+    // fetch a result
+    const response = await fetch(`http://127.0.0.1:8787/v1/flow/${session}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain",
+      },
+      body: content,
+    });
+    console.log("fetchProcess", { response });
+    if (response.status !== 200) {
+      emitter.emit("failureCompletedProcess", {
+        session,
+        error: response.statusText,
+      });
+    }
+
+    const body = await response.text();
+    console.log("fetchProcess", { body });
+
+    contract = load(body) as BriefContract;
+    console.log("fetchProcess", { contract });
+
+    // check a contract
     checkContract(contract);
   } catch (error) {
-    emitter.emit("failureCompletedProcess", {
-      session,
-      error,
-    });
+    emitter.emit("failureCompletedProcess", { session, error });
     return;
   }
 
