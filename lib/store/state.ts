@@ -23,6 +23,8 @@ export const $appStatus = atom<AppStatus>("undefined");
 
 export const $session = atom<string>("");
 
+export const $lastError = atom<string | object | null>(null);
+
 // flow contract
 export const $flowContractId = atom<string>("");
 export const $flowContractVaultId = atom<string>("");
@@ -36,6 +38,7 @@ export const $result = atom<string | undefined>(undefined);
 
 export function resetAppState(status: AppStatus = "undefined") {
   $appStatus.set(status);
+  $lastError.set(null);
 
   $flowContractId.set("");
   $flowContractVaultId.set("");
