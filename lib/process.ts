@@ -6,6 +6,7 @@ import {
   $expectedWaitingTime,
   $lastError,
   $session,
+  $view,
 } from "./store/state";
 import type { DataBlock, DataRow, Options } from "./types";
 
@@ -147,6 +148,8 @@ async function translateSentences(
   return r;
 }
 
+let checker: NodeJS.Timeout | undefined;
+
 export async function process(
   source: string,
   el: HTMLElement,
@@ -156,6 +159,7 @@ export async function process(
 
   // view for show processing and result
   const view = el.createEl("div", { cls: "lehrer" });
+  $view.set(view);
 
   const file = ctx.sourcePath
     ? this.app.vault.getAbstractFileByPath(ctx.sourcePath)
@@ -168,15 +172,6 @@ export async function process(
   const session = $session.get();
   // start the event-driven process
   emitter.emit("readNoteProcess", { session, content });
-
-  // show an updated status
-  const updateViewInSeconds = 1000;
-  const checker = setInterval(() => viewHandler(view), updateViewInSeconds);
-
-  // we clear the status checker after some time
-  // TODO Stop a check by event.
-  await new Promise((resolve) => setTimeout(resolve, 12 * 1000));
-  clearInterval(checker);
 
   //   // detect how many text blocks we have
   //   const dataBlock = detectDataBlock(source);
@@ -201,56 +196,4 @@ export async function process(
   //     tr.createEl("td", { text: row.original, cls: "original-text" });
   //     tr.createEl("td", { text: row.translation, cls: "input-text" });
   //   }
-}
-
-// TODO Many notes.
-let statusElement: HTMLElement;
-
-function viewHandler(view: HTMLElement) {
-  const status = $appStatus.get();
-  console.log("viewHandler", { state: status });
-
-  statusElement ??= view.createEl("pre", { text: "Processing..." });
-
-  if (status === "read-note") {
-    statusElement.setText("Reading note...");
-    return;
-  }
-
-  if (status === "request-flow") {
-    statusElement.setText("Requesting flow...");
-    return;
-  }
-
-  if (status === "waiting-result") {
-    const seconds = $expectedWaitingTime.get();
-    statusElement.setText(`Waiting result... ${seconds} s`);
-    return;
-  }
-
-  if (status === "fetch-result") {
-    statusElement.setText("Fetching result...");
-    return;
-  }
-
-  if (status === "success-completed") {
-    statusElement.setText("Processing completed.");
-    return;
-  }
-
-  if (status === "failure-completed") {
-    const lastError = $lastError.get();
-    statusElement.setText(
-      `Processing completed with error.\n\n${lastError ? lastError : ""}`,
-    );
-    return;
-  }
-
-  if (status === "timeout-completed") {
-    statusElement.setText("Processing timeout.");
-    return;
-  }
-
-  // any other status
-  statusElement.setText(`TODO ${status}`);
 }
